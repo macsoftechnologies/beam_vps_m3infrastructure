@@ -2603,7 +2603,7 @@ export class NewRequestComponent implements OnInit {
     console.log(currentDenmarkDate)
     console.log(currentDenmarkTime)
 
-    this.Requestdata.denmark_time = [currentDenmarkDate, currentDenmarkTime];
+    this.Requestdata.denmark_time = config.getDenmarkTime.full();
     // this.Requestdata.denmark_date = currentDenmarkDate;
 
 
@@ -2918,10 +2918,10 @@ export class NewRequestComponent implements OnInit {
       console.log(currentDenmarkDate)
       console.log(currentDenmarkTime)
 
-      this.updaterequestdata.denmark_time = [currentDenmarkDate, currentDenmarkTime];
+      this.updaterequestdata.denmark_time = config.getDenmarkTime.full();;
       // this.updaterequestdata.denmark_date = currentDenmarkDate;
 
-      this.updaterequestdata.createdTime = [currentDenmarkDate, currentDenmarkTime];
+      this.updaterequestdata.createdTime = config.getDenmarkTime.full();;
       console.log(this.updaterequestdata.createdTime, "time")
 
       this.updaterequestdata.Assign_Start_Time =
@@ -3278,7 +3278,7 @@ export class NewRequestComponent implements OnInit {
 
       // this.updaterequestdata.denmark_time = [currentDenmarkDate, currentDenmarkTime];
 
-      this.updaterequestdata.createdTime = [currentDenmarkDate, currentDenmarkTime];
+      this.updaterequestdata.createdTime = config.getDenmarkTime.full();
       console.log(this.updaterequestdata.createdTime, "time")
 
       this.updaterequestdata.Assign_Start_Time =
