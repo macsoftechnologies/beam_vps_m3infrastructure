@@ -11,6 +11,7 @@ import { validateBasis } from '@angular/flex-layout';
 import { forkJoin, fromEvent } from 'rxjs';
 import { UniqueUser } from 'app/views/Models/UniqueUserDto';
 import { map, debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
 @Component({
   selector: 'app-employee',
@@ -172,6 +173,8 @@ export class EmployeeComponent implements OnInit {
       password: null
     }
 
+    gridCols = 2;
+
   // EmpDto:Employee
   // {
   //   roleId:null,
@@ -182,7 +185,7 @@ export class EmployeeComponent implements OnInit {
   // }
   //Departmentcontrol = new FormControl(this.Departments[1].value);
 
-  constructor(private fb: FormBuilder, private empservice: EmployeeService,
+  constructor(private fb: FormBuilder, private empservice: EmployeeService, private breakpointObserver: BreakpointObserver,
     private suctservice: SubcontractorService, @Optional() @Inject(MAT_DIALOG_DATA) public data: any[],
     private deptservice: DepartmentService, private _snackBar: MatSnackBar) {
     //this.spinner=true;
@@ -208,6 +211,11 @@ export class EmployeeComponent implements OnInit {
   }
 
   ngOnInit(): void {
+
+    this.breakpointObserver.observe(['(max-width: 599px)']) // 👈 custom mobile-only query
+      .subscribe(result => {
+        this.gridCols = result.matches ? 1 : 2;
+      });
 
     this.useraccess = true;
     this.EmployeeForm = this.fb.group({

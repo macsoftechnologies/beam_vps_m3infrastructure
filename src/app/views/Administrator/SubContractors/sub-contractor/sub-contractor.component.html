@@ -7,7 +7,7 @@
 
         <mat-card-content class="card-content">
             <form [formGroup]="SubcontractorForm" class="example-form">
-                    <mat-grid-list cols="2" rowHeight="90px">
+                    <mat-grid-list [cols]="gridCols" rowHeight="90px">
                         <mat-grid-tile>
                             <mat-form-field appearance="outline" class="full-width">
                                 <mat-label>Contractor Name</mat-label>

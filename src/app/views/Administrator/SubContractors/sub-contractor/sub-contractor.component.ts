@@ -6,6 +6,7 @@ import { SubcontractorDto, UpdateSubcontractorDto } from 'app/views/Models/Subco
 import { SubcontractorService } from 'app/shared/services/subcontractor.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout'
 
 @Component({
   selector: 'app-sub-contractor',
@@ -36,7 +37,9 @@ export class SubContractorComponent implements OnInit {
     // password:null
   }
 
-  constructor(private fb: FormBuilder, private empservice: UserService, private _snackBar: MatSnackBar,
+  gridCols = 2;
+
+  constructor(private fb: FormBuilder,private breakpointObserver: BreakpointObserver, private empservice: UserService, private _snackBar: MatSnackBar,
     private depservice: DepartmentService, private subcservice: SubcontractorService,
     @Optional() @Inject(MAT_DIALOG_DATA) public data: any[],) {
     this.spinner = true;
@@ -53,6 +56,11 @@ export class SubContractorComponent implements OnInit {
   }
 
   ngOnInit(): void {
+
+    this.breakpointObserver.observe(['(max-width: 599px)']) // 👈 custom mobile-only query
+      .subscribe(result => {
+        this.gridCols = result.matches ? 1 : 2;
+      });
 
     if (this.data != null && this.data["editform"] == true) {
       this.Editform = true;

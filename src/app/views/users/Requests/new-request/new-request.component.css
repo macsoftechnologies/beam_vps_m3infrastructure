@@ -4481,6 +4481,36 @@ input {
 }
 }
 
+@media (min-width: 320px) and (max-width: 600px) {
+  :host ::ng-deep .matrequest {
+    width: 100% !important;
+    padding: 0px !important;
+  }
+  .card-content {
+  padding: 15px;
+  }
+  .submit-btn {
+    position: absolute;
+    bottom: -33px;
+    right: 0px;
+  }
+}
+@media (min-width: 600px) and (max-width: 1024px) {
+  :host ::ng-deep .matrequest {
+    width: 50% !important;
+    padding: 0px !important;
+  }
+  .card-content {
+  padding: 15px;
+  }
+  .submit-btn {
+    position: absolute;
+    bottom: -33px;
+    right: 0px;
+  }
+ 
+}
+
 /* / End Responsive RendsborgPark M3 North-1 in background css  / */
 
 /* background color on bulidings */

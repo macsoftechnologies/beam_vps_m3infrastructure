@@ -15,6 +15,7 @@ import { MatDialogRef, MatDialog } from '@angular/material/dialog';
 import { ListPopupComponent } from '../Requests/list-popup/list-popup.component';
 import { config } from 'config';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 interface Building {
   buildingId: number;
   building_name: string;
@@ -141,9 +142,11 @@ export class PlansComponent implements OnInit {
   ListWeeks: any[] = [];
   private allRooms: RoomGroup[] = [];
   private allFloors: { buildingId: number; floorName: string }[] = [];
+  gridCols = 2;
 
   constructor(private fb: FormBuilder, private userservices: UserService,
     private route: Router,public ete: ExportExcelService,
+    private breakpointObserver: BreakpointObserver,
     private subcontrservice: SubcontractorService,
     private requestservice: RequestService,
     private requstservice: RequestService, private http: HttpClient,
@@ -172,6 +175,10 @@ export class PlansComponent implements OnInit {
   // getRooms: string[] = [];
 
   ngOnInit(): void {
+    this.breakpointObserver.observe(['(max-width: 599px)']) // 👈 custom mobile-only query
+      .subscribe(result => {
+        this.gridCols = result.matches ? 1 : 2;
+      });
     this.PlanForm = this.fb.group({
       Date: [''],
       Year: [''],
