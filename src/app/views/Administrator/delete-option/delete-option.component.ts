@@ -9,6 +9,8 @@ import { EmployeeService } from 'app/shared/services/employee.service';
 import { TeamService } from 'app/shared/services/team.service';
 import { DepartmentService } from 'app/shared/services/department.service';
 import { RequestService } from 'app/shared/services/request.service';
+import { ElectricalworkService } from 'app/shared/services/electricalworks.service';
+import { MechanicalworkService } from 'app/shared/services/mechanicalworks.service';
 
 @Component({
   selector: 'app-delete-option',
@@ -30,6 +32,8 @@ export class DeleteOptionComponent implements OnInit {
   private teamsservice:TeamService,
   private deptservice:DepartmentService,
   private precautionservice:SafetyprecautionService,
+  private electricalworkservice:ElectricalworkService,
+  private mechanicalworkservice:MechanicalworkService,
   private reqservice:RequestService) { }
 
   ngOnInit(): void {
@@ -52,6 +56,23 @@ export class DeleteOptionComponent implements OnInit {
     else if(this.data['type']=='safety')
     {
          this.precautionservice.DeleteSafetyprecaution(this.Dto).subscribe(res=>
+          {
+            this.openSnackBar('Record Deleted Successfully');
+
+          });
+    }
+    else if(this.data['type']=='electricalwork')
+    {
+         this.electricalworkservice.DeleteElectricalwork(this.Dto).subscribe(res=>
+          {
+            this.openSnackBar('Record Deleted Successfully');
+
+          });
+    }
+
+    else if(this.data['type']=='mechanicalwork')
+    {
+         this.mechanicalworkservice.DeleteMechanicalwork(this.Dto).subscribe(res=>
           {
             this.openSnackBar('Record Deleted Successfully');
 
