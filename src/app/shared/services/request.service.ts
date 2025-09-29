@@ -226,7 +226,12 @@ export class RequestService {
                 value: 'Tent 11',
                 className: "M3-North-area-2-5",
                 isSelected: false
-              }
+              },
+              {
+                value: 'Tent 13',
+                className: "M3-North-area-2-6",
+                isSelected: false
+              },
             ]
           },
           {
@@ -236,11 +241,7 @@ export class RequestService {
                 value: 'M3 South 1',
                 className: "M3-South-area-1",
                 isSelected: false
-              },{
-                value: 'Tent 13',
-                className: "M3-South-area-2",
-                isSelected: false
-              },
+              }
             ]
           },
           {
@@ -279,6 +280,11 @@ export class RequestService {
               {
                 value: 'Office and Welfare cabin area',
                 className: "Office-Welfare",
+                isSelected: false
+              },
+              {
+                value: 'Tent 16',
+                className: "Office-Welfare-1",
                 isSelected: false
               },
             ]
