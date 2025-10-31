@@ -181,6 +181,8 @@ export class NewRequestComponent implements OnInit {
   typeOfActivityMap: any[] = [];
   electricalMap: any[] = [];
   mechanicalMap: any[] = [];
+  filteredElectricalGroups: any[] = [];
+  filteredMechanicalList: any[] = [];
 
   blocks: any[] = [];
 
@@ -633,6 +635,10 @@ export class NewRequestComponent implements OnInit {
     createdTime: null,
   }
   updaterequestdata: EditRequestDto = {
+    low_risk_hotwork: null,
+    high_risk_hotwork: null,
+    hot_work_checklist_filled: null,
+    fire_guard_present:null,
     fields: "",
     work_type: null,
     electrical_works: null,
@@ -1612,6 +1618,10 @@ export class NewRequestComponent implements OnInit {
     })
 
     this.RequestForm = this.fb.group({
+      low_risk_hotwork: ["",],
+      high_risk_hotwork: ["",],
+      hot_work_checklist_filled: ["",],
+      fire_guard_present: ["",],
       electrical_works: ["",],
       mechanical_works: ["",],
       work_type: ["", ],
@@ -2034,6 +2044,8 @@ this.RequestForm.get('floatLabel107').valueChanges.subscribe(val => {
       this.RequestForm.get('newWorkDate').reset(); // clear if no startdate or night shift off
     }
   });
+      this.filteredElectricalGroups = this.groupedElectricalList;
+  this.filteredMechanicalList = this.mechanicalList;
   }
 
 
@@ -2042,6 +2054,39 @@ this.RequestForm.get('floatLabel107').valueChanges.subscribe(val => {
     localStorage.removeItem('firstZoneStatus');
     localStorage.removeItem('globalSelectedBlocks');
   }
+
+     onElectricalOpened(opened: boolean) {
+  if (opened) this.filteredElectricalGroups = this.groupedElectricalList;
+}
+
+onMechanicalOpened(opened: boolean) {
+  if (opened) this.filteredMechanicalList = this.mechanicalList;
+}
+
+onElectricalSearch(val: string) {
+  if (!val) {
+    this.filteredElectricalGroups = this.groupedElectricalList;
+    return;
+  }
+  const lowerVal = val.toLowerCase();
+  this.filteredElectricalGroups = this.groupedElectricalList
+    .map(group => ({
+      module: group.module,
+      items: group.items.filter(e => e.name.toLowerCase().includes(lowerVal))
+    }))
+    .filter(group => group.items.length > 0);
+}
+onMechanicalSearch(val: string) {
+  if (!val) {
+    this.filteredMechanicalList = this.mechanicalList;
+    return;
+  }
+  const lowerVal = val.toLowerCase();
+  this.filteredMechanicalList = this.mechanicalList.filter(e =>
+    e.mechanical_works.toLowerwCase().includes(lowerVal)
+  );
+}
+
   
   // Helper function to group by module
 private groupByModule(data: any[], displayProperty: string): any[] {
@@ -4291,6 +4336,12 @@ private logFieldChanges(previousData: any, currentData: any): any[] {
       this.updaterequestdata.ConM_initials1 = this.RequestForm.controls["ConM_initials1"].value;
       this.updaterequestdata.reject_reason = this.RequestForm.controls["reject_reason"].value;
       this.updaterequestdata.cancel_reason = this.RequestForm.controls["cancel_reason"].value;
+      
+      //hotwork fields while opening
+      this.updaterequestdata.low_risk_hotwork = this.RequestForm.controls["low_risk_hotwork"].value;
+      this.updaterequestdata.high_risk_hotwork = this.RequestForm.controls["high_risk_hotwork"].value;
+      this.updaterequestdata.hot_work_checklist_filled = this.RequestForm.controls["hot_work_checklist_filled"].value;
+      this.updaterequestdata.fire_guard_present = this.RequestForm.controls["fire_guard_present"].value;
 
       // this.updaterequestdata.rams_file = this.RequestForm.controls["rams_file"].value;
       this.addNotes.permit_no = this.updaterequestdata.PermitNo;
@@ -5741,6 +5792,11 @@ this.RequestForm.controls["mechanical_works"].setValue(mechanicalIds);
     this.RequestForm.controls["ConM_initials1"].setValue(this.data.payload?.["ConM_initials1"] || "");
     this.RequestForm.controls["reject_reason"].setValue(this.data.payload?.["reject_reason"] || "");
     this.RequestForm.controls["cancel_reason"].setValue(this.data.payload?.["cancel_reason"] || "");
+    
+    this.RequestForm.controls["low_risk_hotwork"].setValue(this.data.payload?.["low_risk_hotwork"] || "");
+    this.RequestForm.controls["high_risk_hotwork"].setValue(this.data.payload?.["high_risk_hotwork"] || "");
+    this.RequestForm.controls["hot_work_checklist_filled"].setValue(this.data.payload?.["hot_work_checklist_filled"] || "");
+    this.RequestForm.controls["fire_guard_present"].setValue(this.data.payload?.["fire_guard_present"] || ""); 
     
     // Handle all the other floatLabel controls
     for (let i = 1; i <= 109; i++) {
