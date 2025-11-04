@@ -1849,7 +1849,8 @@ canChangeStatus(row: any): boolean {
     Object.keys(this.SearchRequest).forEach((key) => {
       this.SearchRequest[key] = null;
     });
-    this.ngOnInit();
+    // this.ngOnInit();
+    window.location.reload();
   }
   selectFn(info) {
     console.log(info);
