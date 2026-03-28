@@ -701,6 +701,11 @@ export class RequestService {
                 className: "Office-Welfare",
                 isSelected: false
               },
+              {
+                value: 'Tent 16',
+                className: "Office-Welfare-1",
+                isSelected: false
+              },
             ]
           },
           {

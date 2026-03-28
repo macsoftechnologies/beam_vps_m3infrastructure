@@ -4,6 +4,7 @@ import {
   OnDestroy,
   ViewChild,
   ElementRef,
+  HostListener
 } from '@angular/core';
 import { MatDialogRef, MatDialog } from '@angular/material/dialog';
 
@@ -360,6 +361,10 @@ export class ListRequestComponent implements OnInit {
       Statusid: 'Pre-Approved',
       Statusname: 'Pre-Approved',
     },
+    {
+      Statusid: 'Auto-Cancel',
+      Statusname: 'Auto-Cancel',
+    },
   ];
   TypeS: any[] = [
     {
@@ -393,7 +398,13 @@ export class ListRequestComponent implements OnInit {
     hras: '',
     taskSpecificPPE: '',
     area: '',
-    permit_type: ''
+    permit_type: '',
+    permit_under: '',
+    night_shift: '',
+    new_date: "",
+    new_end_time: "",
+    Start_Time: "",
+    End_Time: ""
   };
 
   RequestsbyidDto: RequestBySubcontractorId = {
@@ -407,6 +418,8 @@ export class ListRequestComponent implements OnInit {
   Buildings: Building[] = [];
   filteredFloors: string[] = [];
   filteredRooms: RoomGroup[] = [];
+  isnightshiftyes: boolean = false;
+  gridCols3: number = 3;
   
   private allRooms: RoomGroup[] = [];
   private allFloors: { buildingId: number; floorName: string }[] = [];
@@ -463,22 +476,31 @@ export class ListRequestComponent implements OnInit {
   !this.approvalUsers.includes('Admin')
 );
    
-    this.breakpointObserver.observe([
-      Breakpoints.XSmall,
-      Breakpoints.Small,
-      Breakpoints.Medium,
-      Breakpoints.Large,
-    ]).subscribe(result => {
-      if (result.breakpoints[Breakpoints.XSmall]) {
-        this.gridCols = 1; // Single column for extra small screens
-      } else if (result.breakpoints[Breakpoints.Small]) {
-        this.gridCols = 2; // Two columns for small screens
-      } else if (result.breakpoints[Breakpoints.Medium]) {
-        this.gridCols = 2; // Three columns for medium screens
-      } else if (result.breakpoints[Breakpoints.Large]) {
-        this.gridCols = 2; // Four columns for large screens
-      }
-    });
+    this.breakpointObserver.observe(['(max-width: 599px)']) // 👈 custom mobile-only query
+      .subscribe(result => {
+        this.gridCols = result.matches ? 1 : 2;
+      });
+   
+this.breakpointObserver.observe([
+  Breakpoints.XSmall,
+  Breakpoints.Small,
+  Breakpoints.Medium,
+  Breakpoints.Large,
+]).subscribe(result => {
+  if (result.breakpoints[Breakpoints.XSmall]) {
+    this.gridCols = 1;
+    this.gridCols3 = 1;
+  } else if (result.breakpoints[Breakpoints.Small]) {
+    this.gridCols = 2;
+    this.gridCols3 = 2;
+  } else if (result.breakpoints[Breakpoints.Medium]) {
+    this.gridCols = 2;
+    this.gridCols3 = 3;
+  } else if (result.breakpoints[Breakpoints.Large]) {
+    this.gridCols = 2;
+    this.gridCols3 = 3;
+  }
+});
 
     let testing = [1,2,3]
 
@@ -524,6 +546,12 @@ export class ListRequestComponent implements OnInit {
       TaskSpecific:['',],
       area: ['',],
       permit_type: ['',],
+      permit_under: ['',],
+      StartTime: ['',],
+      EndTime: ['',],
+      night_shift: ['',],
+      newWorkDate: ['',],
+      new_end_time: ['',],
     });
     this.initializeData();
     this.setupFilterListeners();
@@ -745,6 +773,40 @@ private filterRooms(buildingIds: number[], levels: string[]): RoomGroup[] {
     });
   }
 
+  
+  toggleNightShift(isChecked: boolean) {
+    this.isnightshiftyes = isChecked;
+    this.RequestlistForm.get('night_shift').setValue(isChecked ? 1 : '');
+  
+    const newEndTimeControl = this.RequestlistForm.get('new_end_time');
+    // const newWorkDateControl = this.RequestlistForm.get('newWorkDate');
+  
+    // if (isChecked) {
+    //   const startDateValue = this.RequestlistForm.get('Startdate').value;
+    //   if (startDateValue) {
+    //     const startDate = new Date(startDateValue);
+    //     const newWorkDate = new Date(startDate);
+    //     newWorkDate.setDate(startDate.getDate() + 1);
+    //     const formattedDate = this.formatDateWithoutTimezone(newWorkDate);
+    //     // newWorkDateControl.setValue(formattedDate);
+    //   }
+    //   // Add required validators when night shift is YES
+    //   newEndTimeControl.setValidators([Validators.required]);
+    //   // newWorkDateControl.setValidators([Validators.required]);
+    // } else {
+    //   // Clear values and validators when night shift is NO
+    //   newEndTimeControl.reset();
+    //   // newWorkDateControl.reset();
+    //   newEndTimeControl.clearValidators();
+    //   // newWorkDateControl.clearValidators();
+    // }
+  
+    // Re-evaluate validity after validator change
+    // newEndTimeControl.updateValueAndValidity();
+    // newWorkDateControl.updateValueAndValidity();
+  }
+
+
 
   getItems() {
     //this.items = this.userservices.RequestLists;
@@ -913,6 +975,12 @@ this.SearchRequest.Request_status = formattedStatus || "";
       this.RequestlistForm.controls['WorkingDateTo'].value,
       'yyyy-MM-dd'
     );
+        var newDate = this.datePipe.transform(
+      this.RequestlistForm.controls['newWorkDate'].value,
+      'yyyy-MM-dd'
+    );
+    this.SearchRequest.new_end_time =
+      this.RequestlistForm.controls['new_end_time'].value.toString();
     this.SearchRequest.Type_Of_Activity_Id =
       this.RequestlistForm.controls['TypeOfActivity'].value.toString();
     // this.SearchRequest.Room_Type = this.RequestlistForm.controls['Level'].value.toString();
@@ -937,6 +1005,13 @@ const formattedArea = areasArray
 this.SearchRequest.area = formattedArea || ""; 
 this.SearchRequest.permit_type =
       this.RequestlistForm.controls['permit_type'].value.toString();
+ this.SearchRequest.permit_under =
+      this.RequestlistForm.controls['permit_under'].value.toString();
+      this.SearchRequest.night_shift =
+      this.RequestlistForm.controls['night_shift'].value.toString();
+
+        this.SearchRequest.Start_Time = this.RequestlistForm.controls["StartTime"].value || "";
+  this.SearchRequest.End_Time = this.RequestlistForm.controls["EndTime"].value || "";
 
 //     const levelsArray = this.RequestlistForm.controls['Level'].value;
 // this.SearchRequest.Room_Type = levelsArray.map((val: string) => `'${val}'`).join(',');
@@ -955,6 +1030,12 @@ this.SearchRequest.permit_type =
     } 
     else {
       this.SearchRequest.toDate = '';
+    }
+    if (newDate != null) {
+      this.SearchRequest.new_date = newDate;
+    } 
+    else {
+      this.SearchRequest.new_date = '';
     }
     if(this.RequestlistForm.get("Hras").value.includes('none')) {
       this.SearchRequest.hras = 'none';
@@ -1100,6 +1181,24 @@ this.SearchRequest.permit_type =
     link.click();
   }
 
+    @HostListener('document:keydown.enter', ['$event'])
+onEnterSearch(event: KeyboardEvent) {
+  const activeElement = document.activeElement;
+  
+  // Check if any mat-select panel is open - if so, don't trigger search
+  const isDropdownOpen = document.querySelector('.mat-select-panel');
+  
+  if (isDropdownOpen) {
+    return; // let the dropdown handle the enter key
+  }
+
+  // Only trigger if the filter tab is visible (form is open)
+  if (this.Filtertab !== undefined) {
+    event.preventDefault();
+    this.search({ page: this.currentPage });
+  }
+}
+
   Editrow(row) {
     this.requestservice.SelectedRequestData = {
       payload: row,
@@ -1130,12 +1229,30 @@ this.SearchRequest.permit_type =
     } else {
       row['Request_status'] = 'Hold';
     }
+         const roomNosArray = row['Room_Nos']
+    ? row['Room_Nos'].split(',').map((r: string) => r.trim())
+    : [];
+
+  // Find the matching building by Building_Id
+  const buildingData = this.requestservice.bulidingDataWithIds();
+  const matchedBuilding = buildingData.find(
+    (b) => Number(b.buildingId) === Number(row['Building_Id'])
+  );
+
+  // Find floorNames where any zoneSubList value matches the Room_Nos values
+  const matchedZones = matchedBuilding?.zoneList
+    ?.filter((zone) =>
+      zone.zoneSubList.some((sub) => roomNosArray.includes(sub.value))
+    )
+    .map((zone) => zone.floorName) || [];
+
+  console.log('matched zone floor names:', matchedZones);
     let title = 'Copy Request';
     let dialogRef: MatDialogRef<any> = this.dialog.open(CopyRequestComponent, {
       width: '1200px',
       height: '300px',
       disableClose: false,
-      data: { title: title, payload: row, copyform: true },
+      data: { title: title, payload: row, copyform: true, zones: matchedZones },
     });
     dialogRef.afterClosed().subscribe((res) => {
       if (this.api == 'SearchRequest') {
@@ -1239,6 +1356,12 @@ this.SearchRequest.permit_type =
       taskSpecificPPE: '',
       area: formattedArea,
       permit_type: '',
+      permit_under: '',
+      night_shift: '',
+      new_date: '',
+      new_end_time: '',
+      Start_Time: '',
+      End_Time: ''
     };
 
     this.requestservice.SearchRequest(searchCheckRequest).subscribe((res) => {
@@ -1266,6 +1389,9 @@ this.SearchRequest.permit_type =
 }
 
 proceedWithStatusChange(row) {
+    row.permit_type = row.permit_type ?? '';
+  row.permit_under = row.permit_under ?? '';
+  console.log("approvalcheck", this.firstApproval, this.secondApproval, this.bothApproval);
     let title = 'Request Status Change ';
     let type;
     if ((this.firstApproval || this.bothApproval) && row.Request_status == 'Hold' && (
@@ -1274,6 +1400,8 @@ proceedWithStatusChange(row) {
       (row.permit_type == 'Construction' && row.permit_under=='Construction') || 
       (row.permit_type == 'Commissioning' && row.permit_under=='Commissioning') ||
       (row.permit_type == '' && row.permit_under=='') ||
+      (row.permit_type == '' && row.permit_under=='Construction') ||
+      (row.permit_type == '' && row.permit_under=='Commissioning') ||
       (row.permit_type == 'Commissioning' && row.permit_under=='') ||
       (row.permit_type == 'Construction' && row.permit_under=='')
     )) {
@@ -1284,6 +1412,8 @@ proceedWithStatusChange(row) {
       (row.permit_type == 'Construction' && row.permit_under=='Construction') || 
       (row.permit_type == 'Commissioning' && row.permit_under=='Commissioning') ||
       (row.permit_type == '' && row.permit_under=='') ||
+      (row.permit_type == '' && row.permit_under=='Construction') ||
+      (row.permit_type == '' && row.permit_under=='Commissioning') ||
       (row.permit_type == 'Commissioning' && row.permit_under=='') ||
       (row.permit_type == 'Construction' && row.permit_under==''))) {
       type = 'operartor';
@@ -1293,6 +1423,8 @@ proceedWithStatusChange(row) {
       (row.permit_type == 'Construction' && row.permit_under=='Construction') || 
       (row.permit_type == 'Commissioning' && row.permit_under=='Commissioning') ||
       (row.permit_type == '' && row.permit_under=='') ||
+      (row.permit_type == '' && row.permit_under=='Construction') ||
+      (row.permit_type == '' && row.permit_under=='Commissioning') ||
       (row.permit_type == 'Commissioning' && row.permit_under=='') ||
       (row.permit_type == 'Construction' && row.permit_under==''))) {
       type = 'operartor';
@@ -1308,16 +1440,16 @@ proceedWithStatusChange(row) {
     //   }
     // }
 
-    if(!this.firstApproval && this.secondApproval && row.permit_under == 'Construction' && row.permit_type == 'Commissioning' && row.Request_status == 'Pre-Approved') {
+    if(!this.firstApproval && this.secondApproval && (row.permit_under == 'Construction' || row.permit_under == '') && row.permit_type == 'Commissioning' && row.Request_status == 'Pre-Approved') {
       return this.openSnackBar("Can't have access to final approval. Please ask COMM person to approve it.");
     }
-    if(!this.firstApproval && this.secondApproval && row.permit_under == 'Commissioning' && row.permit_type == 'Construction' && row.Request_status == 'Hold') {
+    if(!this.firstApproval && this.secondApproval && row.permit_under == 'Commissioning' && (row.permit_under == 'Construction' || row.permit_under == '') && row.Request_status == 'Hold') {
       return this.openSnackBar("Can't have access to initial approval. Please ask CONM person to approve it.");
     }
-    if(this.firstApproval && !this.secondApproval && row.permit_under == 'Commissioning' && row.permit_type == 'Construction' && row.Request_status == 'Pre-Approved') {
+    if(this.firstApproval && !this.secondApproval && row.permit_under == 'Commissioning' && (row.permit_under == 'Construction' || row.permit_under == '') && row.Request_status == 'Pre-Approved') {
       return this.openSnackBar("Can't have access to final approval. Please ask CONM person to pre-approve it.");
     } 
-    if(this.firstApproval && !this.secondApproval && row.permit_under == 'Construction' && row.permit_type == 'Commissioning' && row.Request_status == 'Hold') {
+    if(this.firstApproval && !this.secondApproval && (row.permit_under == 'Construction' || row.permit_under == '') && row.permit_type == 'Commissioning' && row.Request_status == 'Hold') {
       return this.openSnackBar("Can't have access to initial approval. Please ask C&Q person to pre-approve it.");
     } 
     else {
@@ -1339,6 +1471,7 @@ proceedWithStatusChange(row) {
     );
     
     dialogRef.afterClosed().subscribe((res) => {
+      if (res === true) { 
       if (this.api == 'SearchRequest') {
         console.log("search API");
         const mainValue = this.currentPage - 1;
@@ -1352,6 +1485,7 @@ proceedWithStatusChange(row) {
         this.getPermits(this.currentPage, this.startValue);
         console.log("NUMMBER", this.currentPage)
         console.log("Start Value", this.startValue)
+      }
       }
     });
   }
@@ -1380,6 +1514,7 @@ proceedWithStatusChange(row) {
           }
         );
         dialogRef.afterClosed().subscribe((res) => {
+          if (res === true) { 
           if (this.api == 'SearchRequest') {
             console.log("search API");
             // this.api = 'SearchRequest';
@@ -1398,6 +1533,7 @@ proceedWithStatusChange(row) {
             console.log("NUMMBER", this.currentPage)
             console.log("Start Value", this.startValue)
           }
+        }
         });
       }
     } else if (status == 'Closed') {
@@ -1606,6 +1742,12 @@ proceedWithStatusChange(row) {
             taskSpecificPPE: '',
             area: formattedArea,
             permit_type: '',
+            permit_under: '',
+            night_shift: '',
+            new_date: '',
+            new_end_time: '',
+            Start_Time: '',
+            End_Time: ''
         };
 
         return this.requestservice.SearchRequest(searchCheckRequest).pipe(
