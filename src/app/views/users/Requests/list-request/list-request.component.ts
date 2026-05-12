@@ -1245,7 +1245,7 @@ const matchedBuilding = buildingData.find(
 const matchedZones =
   matchedBuilding?.zoneList
     ?.filter((zone) =>
-      zone.zoneSubList.some((sub) => roomNosArray.includes(sub.value))
+      zone.zoneSubList.some((sub) => roomNosArray.includes(sub.value.trim()))
     )
     .map((zone) => zone.floorName) || [];
 
